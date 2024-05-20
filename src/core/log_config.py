@@ -13,7 +13,7 @@ def setup_logger():
         "disable_existing_loggers": False,
         "formatters": {
             "default": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                "format": "%(asctime)3s - %(name)s - %(levelname)s - %(message)s",
             },
         },
         "handlers": {

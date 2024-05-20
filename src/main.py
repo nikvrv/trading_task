@@ -1,22 +1,34 @@
+import asyncio
+
 import uvicorn
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, BackgroundTasks
 from fastapi.responses import ORJSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
 
-from src.api import orders
+from src.api.endpoints import orders
 from src.db.database import create_tables, engine
 from src.core.log_config import setup_logger
 from logging import getLogger
-
+from src.api.ws.orders import router as websocket_router
+from src.event_processor import MockOrderExecutor
+from src.db.temp import event_queue
 
 setup_logger()
 logger = getLogger(__name__)
 
 
+
+async def start_event_worker():
+    executor = MockOrderExecutor(event_queue)
+    asyncio.create_task(executor.event_worker())
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await create_tables(engine)
+    await start_event_worker()
+
     logger.info("Database tables created")
     yield
     await engine.dispose()
@@ -42,6 +54,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
+app.include_router(websocket_router, tags=["websocket"])
 
 
 @app.middleware("http")
