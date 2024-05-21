@@ -24,7 +24,6 @@ class MockOrderExecutor:
                 logger.info(event)
 
                 if current_time >= event.timestamp + timedelta(seconds=self.ORDER_TIME):
-
                     db = await get_db_session()
                     try:
                         await update_order_status_in_db(db, event.order_id, "executed")

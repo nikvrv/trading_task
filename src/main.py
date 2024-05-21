@@ -1,7 +1,7 @@
 import asyncio
 
 import uvicorn
-from fastapi import FastAPI, Request, status, BackgroundTasks
+from fastapi import FastAPI, Request, status
 from fastapi.responses import ORJSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
@@ -13,10 +13,15 @@ from logging import getLogger
 from src.api.ws.orders import router as websocket_router
 from src.event_processor import MockOrderExecutor
 from src.db.temp import event_queue
+from dotenv import load_dotenv
+from src.core.config import get_settings
 
+
+load_dotenv()
 setup_logger()
 logger = getLogger(__name__)
 
+settings = get_settings()
 
 
 async def start_event_worker():
@@ -28,7 +33,6 @@ async def start_event_worker():
 async def lifespan(app: FastAPI):
     await create_tables(engine)
     await start_event_worker()
-
     logger.info("Database tables created")
     yield
     await engine.dispose()
@@ -36,7 +40,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="settings.PROJECT_NAME",
+    title=settings.project_name,
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
@@ -66,4 +70,4 @@ async def log_requests(request: Request, call_next):
 
 
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("src.main:app", port=8000, reload=True)

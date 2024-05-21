@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  forex-back:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+#  test:
+#    build:
+#      context: https://github.com/nikvrv/tests_for_test_task.git#develop
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - forex-back
+#    environment:
+#      - APP_URL=http://myapp:9000
+#    networks:
+#      - app-network
+
+networks:
+  app-network:
+    driver: bridge
