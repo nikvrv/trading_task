@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  forex-back:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+      PROJECT_NAME: "Forex Trading Platform API"
+      DATABASE_URL: "sqlite+aiosqlite:///../test.db"
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  test:
+    build:
+      context: https://github.com/nikvrv/trading_task_tests.git#main
+      dockerfile: Dockerfile
+    depends_on:
+      - forex-back
+    environment:
+      - APP_URL=forex-back:8000
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

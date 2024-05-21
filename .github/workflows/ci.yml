@@ -1,0 +1,26 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build and run containers
+      run: |
+        docker-compose up --build -d
+
+    - name: Execute tests
+      run: |
+        docker-compose run test
+
+    - name: Clean up
+      if: always()
+      run: |
+        docker-compose down
