@@ -23,6 +23,9 @@ async def create_order_in_db(db: AsyncSession, order: Order):
     db.add(order)
     await db.commit()
     await db.refresh(order)
+
+    order_message = order.__dict__
+    order_message.pop('_sa_instance_state')
     await manager.broadcast(f"New order created: {order.__dict__}")
     await event_queue.put(OrderEvent(order.id, datetime.now()))
     return order
