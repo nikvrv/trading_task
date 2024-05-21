@@ -26,9 +26,3 @@ class Error(BaseModel):
 
     class Config:
         from_attributes = True
-        # schema_extra = {
-        #     "example": {
-        #         "code": 400,
-        #         "message": "Invalid input"
-        #     }
-        # }
