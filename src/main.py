@@ -12,7 +12,7 @@ from src.core.log_config import setup_logger
 from logging import getLogger
 from src.api.ws.orders import router as websocket_router
 from src.event_processor import MockOrderExecutor
-from src.db.temp import event_queue
+from src.db.crud import event_queue
 from dotenv import load_dotenv
 from src.core.config import get_settings
 

@@ -6,9 +6,12 @@ from src.db.models import Order
 from src.api.ws.orders import manager
 from logging import getLogger
 from src.api.ws.schemes import OrderEvent
-from src.db.temp import event_queue
+from asyncio import Queue
+
 
 logger = getLogger(__name__)
+
+event_queue: Queue[OrderEvent] = Queue()
 
 
 async def get_orders_from_db(db: AsyncSession):
